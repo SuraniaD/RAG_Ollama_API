@@ -1,22 +1,19 @@
-streamlit>=1.37.0
+streamlit==1.37.0
+langchain==0.3.7
+langchain-community==0.3.3
+langchain-text-splitters==0.3.0
 
-# LangChain core
-langchain>=0.1.0
-langchain-core>=0.1.0
-langchain-community>=0.1.0
+faiss-cpu==1.8.0.post1
 
-# NEW text splitters
-langchain-text-splitters>=0.0.1
+unstructured==0.15.10
+unstructured[pdf]
+pdf2image==1.17.0
 
-# Vector storage
-faiss-cpu>=1.7.4
+pypdf==4.2.0
 
-# Unstructured document loaders
-unstructured>=0.12.6
-pypdf>=4.0.0
+requests==2.32.3
 
-# Additional file parsing deps
-python-dotenv>=1.0.1
+python-magic==0.4.27
+python-magic-bin; sys_platform == 'win32'
 
-# For Ollama embeddings / models
-ollama>=0.1.0
+duckduckgo-search==4.4.0   # only needed if you use DDG search tools anywhere
