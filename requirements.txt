@@ -1,7 +1,22 @@
-streamlit>=1.36
-langchain>=0.2.16
-langchain-community>=0.2.10
-faiss-cpu>=1.8.0
-pypdf>=4.2.0
-tiktoken>=0.7.0
-unstructured>=0.15.0 
+streamlit>=1.37.0
+
+# LangChain core
+langchain>=0.1.0
+langchain-core>=0.1.0
+langchain-community>=0.1.0
+
+# NEW text splitters
+langchain-text-splitters>=0.0.1
+
+# Vector storage
+faiss-cpu>=1.7.4
+
+# Unstructured document loaders
+unstructured>=0.12.6
+pypdf>=4.0.0
+
+# Additional file parsing deps
+python-dotenv>=1.0.1
+
+# For Ollama embeddings / models
+ollama>=0.1.0
