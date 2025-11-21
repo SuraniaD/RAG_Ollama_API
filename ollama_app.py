@@ -2,6 +2,7 @@ import streamlit as st
 import time
 import tempfile
 from pathlib import Path
+import requests
 
 # --- LLM + Embeddings ---
 from langchain_community.chat_models import ChatOllama
@@ -27,10 +28,6 @@ from langchain_community.document_loaders import (
     UnstructuredFileLoader
 )
 
-# --- Document Schema (not strictly needed but handy) ---
-from langchain.schema import Document
-
-
 # ----------------------------
 # Streamlit Page Config
 # ----------------------------
@@ -44,7 +41,6 @@ if "vectorstore" not in st.session_state:
     st.session_state["vectorstore"] = None
 if "vectors_ready" not in st.session_state:
     st.session_state["vectors_ready"] = False
-
 
 # ----------------------------
 # Sidebar (settings)
@@ -73,6 +69,20 @@ with st.sidebar:
     else:
         st.info("ℹ️ Vector DB will be built on your first query")
 
+    if st.button("♻️ Reset Vector DB"):
+        st.session_state["vectorstore"] = None
+        st.session_state["vectors_ready"] = False
+        st.success("Vector DB cleared. It will be rebuilt on the next question.")
+
+# ----------------------------
+# Helper: check Ollama is alive
+# ----------------------------
+def check_ollama(base_url: str) -> bool:
+    try:
+        r = requests.get(f"{base_url}/api/tags", timeout=3)
+        return r.status_code == 200
+    except Exception:
+        return False
 
 # ----------------------------
 # Helper: Load documents from uploaded files
@@ -101,7 +111,6 @@ def load_documents(uploaded_files):
 
     return all_docs
 
-
 # ----------------------------
 # Main UI
 # ----------------------------
@@ -122,7 +131,6 @@ user_question = st.text_input("Ask a question about your documents:")
 
 ask_button = st.button("Ask")
 
-
 # ----------------------------
 # Build Vector Store (first time on ask)
 # ----------------------------
@@ -132,6 +140,13 @@ def build_vectorstore_if_needed():
 
     if not uploaded_files:
         st.error("Please upload at least one document before asking a question.")
+        return
+
+    if not check_ollama(base_url):
+        st.error(
+            f"Can't reach Ollama at {base_url}. "
+            "Make sure Ollama is running and accessible."
+        )
         return
 
     with st.spinner("📚 Loading documents and building vector store..."):
@@ -160,7 +175,6 @@ def build_vectorstore_if_needed():
         st.session_state["vectors_ready"] = True
 
         st.success(f"✅ Vector store built with {len(chunks)} chunks.")
-
 
 # ----------------------------
 # RAG Q&A Logic
@@ -219,7 +233,6 @@ Answer in clear, concise language:
         for i, doc in enumerate(result["context"]):
             st.markdown(f"**Chunk {i+1} — Source:** `{doc.metadata.get('source', 'unknown')}`")
             st.write(doc.page_content[:1200])  # truncate for display
-
 
 # ----------------------------
 # Trigger on button click
